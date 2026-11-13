@@ -1,65 +1,125 @@
 <!DOCTYPE html>
 <html lang="ml">
-<head>
-<script>
-/* Old GitHub Pages address -> Netlify site. Runs only on github.io, so it never loops on Netlify. */
-if(/(^|\.)github\.io$/i.test(location.hostname)){location.replace('https://visual-theatre.netlify.app'+location.pathname.replace(/^\/Visual-Theatre\/?/i,'/')+location.search+location.hash)}
-</script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#087a45">
-<title>Peace Radio | Visual Theatre</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<header>
-  <div class="top">
-    <div class="brand">
-      <img src="img/peace-radio-logo.webp" alt="Peace Radio Listeners' Conference logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-      <div class="brandfallback" style="display:none">peace<span>radio</span></div>
-    </div>
-    <nav><a href="#shows">Sections</a><a href="#about">About</a></nav>
-  </div>
-  <div class="hero">
-    <div>
-      <div class="eyebrow">Peace Radio presents</div>
-      <h1><img class="vt-logo" src="img/visual-theatre-logo.webp" alt="Visual Theatre"></h1>
-      <p>അറിവും ചിന്തയും പകരുന്ന ഡോക്യുമെന്ററികൾ ഒരിടത്ത്. നിങ്ങളുടെ ഇഷ്ടപ്പെട്ട പ്രദർശനം തിരഞ്ഞെടുക്കൂ, സീറ്റ് ബുക്ക് ചെയ്യൂ.</p>
-    </div>
-    <div class="hero-card" id="heroCard"><div class="hc-stage"><div class="hc-s active" id="hcStatic"><strong>6</strong><span>Sections to explore</span><hr style="border:0;border-top:1px solid #ffffff40;margin:18px 0"><strong>One space.</strong><span>Stories that make you think.</span></div><div class="hc-s gone" id="hcNow"></div><div class="hc-s gone" id="hcNext"></div></div><div class="hc-dots" id="hcDots"></div></div>
-  </div>
-</header>
-<main id="shows">
-  <div class="status" id="status"></div>
-  <div class="sectionhead"><div><h2>Explore Sections</h2><p>നിങ്ങൾക്ക് കാണാൻ താൽപ്പര്യമുള്ള വിഷയം തിരഞ്ഞെടുക്കൂ.</p></div><span class="count" id="count">6 Sections</span></div>
-  <div class="grid" id="grid"></div>
-</main>
-<footer id="about"><strong>Peace Radio · Visual Theatre</strong><br>Wisdom Islamic Organization<span id="demoNote"><br>ഇത് ആദ്യഘട്ട frontend demo ആണ്. Live seat availability, booking storage, admin & kiosk dashboard എന്നിവ Google Sheets + Apps Script ബന്ധിപ്പിച്ചശേഷം പ്രവർത്തിക്കും.</span></footer>
 
-<div class="modalback" id="modalback">
- <div class="modal">
-  <div id="bookingform">
-   <div class="modalhead"><div><h2 id="modalTitle">Book your seats</h2><p id="modalDuration"></p></div><button class="close" id="close" aria-label="Close">×</button></div>
-   <label for="customer">പേര് / Name</label><input id="customer" placeholder="Your name" autocomplete="name">
-   <label for="mobile">WhatsApp Mobile Number</label><input id="mobile" type="tel" placeholder="10-digit mobile number" inputmode="numeric">
-   <div id="demoSlot"><label for="showtime">Show slot</label><select id="showtime"><option>Afternoon – 12:00 PM to 3:00 PM</option><option>Full Day – 10:00 AM to 6:00 PM</option><option>Sunday – 8:00 AM to 12:00 PM</option></select></div><div id="liveSlots" style="display:none"><label for="slotPick">Show day &amp; time</label><select id="slotPick"></select></div>
-   <div class="two"><div><label for="male">Male tickets</label><input id="male" type="number" min="0" max="10" value="0"></div><div><label for="female">Female tickets</label><input id="female" type="number" min="0" max="10" value="0"></div></div>
-   <div class="summary" id="summary">ആകെ ടിക്കറ്റുകൾ: 0<br>Demo capacity മാത്രം — live availability ഇനിയും connect ചെയ്തിട്ടില്ല.</div>
-   <button class="primary full" id="confirm">Continue to WhatsApp</button>
-   <div class="note" id="formNote">ഈ demo-യിൽ booking Google Sheets-ൽ save ചെയ്യില്ല. WhatsApp തുറന്ന് തയ്യാറാക്കിയ booking request അയയ്ക്കാം. Live confirmation-നായി Apps Script/API പിന്നീട് ചേർക്കണം.</div>
-  </div>
-  <div class="confirm" id="confirmation"><div style="font-size:42px">✓</div><h2 id="confTitle">Booking request prepared</h2><p>നിങ്ങളുടെ Booking ID:</p><div class="ticketid" id="ticketid"></div><p id="ticketdetails"></p><button class="primary full" id="sendwa">Open WhatsApp</button><button class="close" id="done" style="margin-top:12px;border-radius:10px;width:100%">Close</button><div class="note" id="confNote">WhatsApp message അയച്ചാൽ മാത്രമേ request staff-ന് ലഭിക്കൂ. ഇത് live confirmed ticket അല്ല.</div></div>
- </div>
-</div>
-<div class="modalback" id="infoback">
- <div class="modal infomodal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
-  <div class="infotop">
-   <div class="modalhead"><div><small class="infosec" id="infoSec"></small><h2 id="infoTitle"></h2><p id="infoTotal"></p></div><button class="close" id="infoClose" aria-label="Close">×</button></div>
-   <div class="pills" id="infoPills" role="group" aria-label="Sections"></div>
-  </div>
-  <div class="infoscroll" id="infoScroll"><ol class="showlist" id="infoList"></ol></div>
-  <div class="infofoot"><button class="primary full" id="infoBook">Book</button></div>
- </div>
-</div>
-<script src="app.js"></script>
-</body></html>
+<head>
+    <script>
+        /* Old GitHub Pages address -> Netlify site. Runs only on github.io, so it never loops on Netlify. */
+        if (/(^|\.)github\.io$/i.test(location.hostname)) { location.replace('https://visual-theatre.netlify.app' + location.pathname.replace(/^\/Visual-Theatre\/?/i, '/') + location.search + location.hash) }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#087a45">
+    <title>Peace Radio | Visual Theatre</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="top">
+            <div class="brand">
+                <img src="img/peace-radio-logo.webp" alt="Peace Radio Listeners' Conference logo"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                <div class="brandfallback" style="display:none">peace<span>radio</span></div>
+            </div>
+            <nav><a href="#shows">Sections</a><a href="#about">About</a></nav>
+        </div>
+        <div class="hero">
+            <div>
+                <div class="eyebrow">Peace Radio presents</div>
+                <h1><img class="vt-logo" src="img/visual-theatre-logo.webp" alt="Visual Theatre"></h1>
+                <p>അറിവും ചിന്തയും പകരുന്ന ഡോക്യുമെന്ററികൾ ഒരിടത്ത്. നിങ്ങളുടെ ഇഷ്ടപ്പെട്ട പ്രദർശനം തിരഞ്ഞെടുക്കൂ,
+                    സീറ്റ് ബുക്ക് ചെയ്യൂ.</p>
+            </div>
+            <div class="hero-card" id="heroCard">
+                <div class="hc-stage">
+                    <div class="hc-s active" id="hcStatic"><strong>6</strong><span>Sections to explore</span>
+                        <hr style="border:0;border-top:1px solid #ffffff40;margin:18px 0"><strong>One
+                            space.</strong><span>Stories that make you think.</span>
+                    </div>
+                    <div class="hc-s gone" id="hcNow"></div>
+                    <div class="hc-s gone" id="hcNext"></div>
+                </div>
+                <div class="hc-dots" id="hcDots"></div>
+            </div>
+        </div>
+    </header>
+    <main id="shows">
+        <div class="status" id="status"></div>
+        <div class="sectionhead">
+            <div>
+                <h2>Explore Sections</h2>
+                <p>നിങ്ങൾക്ക് കാണാൻ താൽപ്പര്യമുള്ള വിഷയം തിരഞ്ഞെടുക്കൂ.</p>
+            </div><span class="count" id="count">6 Sections</span>
+        </div>
+        <div class="grid" id="grid"></div>
+    </main>
+    <footer id="about"><strong>Peace Radio · Visual Theatre</strong><br>Wisdom Islamic Organization<span
+            id="demoNote"><br>ഇത് ആദ്യഘട്ട frontend demo ആണ്. Live seat availability, booking storage, admin & kiosk
+            dashboard എന്നിവ Google Sheets + Apps Script ബന്ധിപ്പിച്ചശേഷം പ്രവർത്തിക്കും.</span></footer>
+
+    <div class="modalback" id="modalback">
+        <div class="modal">
+            <div id="bookingform">
+                <div class="modalhead">
+                    <div>
+                        <h2 id="modalTitle">Book your seats</h2>
+                        <p id="modalDuration"></p>
+                    </div><button class="close" id="close" aria-label="Close">×</button>
+                </div>
+                <label for="customer">പേര് / Name</label><input id="customer" placeholder="Your name"
+                    autocomplete="name">
+                <label for="mobile">WhatsApp Mobile Number</label><input id="mobile" type="tel"
+                    placeholder="10-digit mobile number" inputmode="numeric">
+                <div id="demoSlot"><label for="showtime">Show slot</label><select id="showtime">
+                        <option>Afternoon – 12:00 PM to 3:00 PM</option>
+                        <option>Full Day – 10:00 AM to 6:00 PM</option>
+                        <option>Sunday – 8:00 AM to 12:00 PM</option>
+                    </select></div>
+                <div id="liveSlots" style="display:none"><label for="slotPick">Show day &amp; time</label><select
+                        id="slotPick"></select></div>
+                <div class="two">
+                    <div><label for="male">Male tickets</label><input id="male" type="number" min="0" max="10"
+                            value="0"></div>
+                    <div><label for="female">Female tickets</label><input id="female" type="number" min="0" max="10"
+                            value="0"></div>
+                </div>
+                <div class="summary" id="summary">ആകെ ടിക്കറ്റുകൾ: 0<br>Demo capacity മാത്രം — live availability ഇനിയും
+                    connect ചെയ്തിട്ടില്ല.</div>
+                <button class="primary full" id="confirm">Continue to WhatsApp</button>
+                <div class="note" id="formNote">ഈ demo-യിൽ booking Google Sheets-ൽ save ചെയ്യില്ല. WhatsApp തുറന്ന്
+                    തയ്യാറാക്കിയ booking request അയയ്ക്കാം. Live confirmation-നായി Apps Script/API പിന്നീട് ചേർക്കണം.
+                </div>
+            </div>
+            <div class="confirm" id="confirmation">
+                <div style="font-size:42px">✓</div>
+                <h2 id="confTitle">Booking request prepared</h2>
+                <p>നിങ്ങളുടെ Booking ID:</p>
+                <div class="ticketid" id="ticketid"></div>
+                <p id="ticketdetails"></p><button class="primary full" id="sendwa">Open WhatsApp</button><button
+                    class="close" id="done" style="margin-top:12px;border-radius:10px;width:100%">Close</button>
+                <div class="note" id="confNote">WhatsApp message അയച്ചാൽ മാത്രമേ request staff-ന് ലഭിക്കൂ. ഇത് live
+                    confirmed ticket അല്ല.</div>
+            </div>
+        </div>
+    </div>
+    <div class="modalback" id="infoback">
+        <div class="modal infomodal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+            <div class="infotop">
+                <div class="modalhead">
+                    <div><small class="infosec" id="infoSec"></small>
+                        <h2 id="infoTitle"></h2>
+                        <p id="infoTotal"></p>
+                    </div><button class="close" id="infoClose" aria-label="Close">×</button>
+                </div>
+                <div class="pills" id="infoPills" role="group" aria-label="Sections"></div>
+            </div>
+            <div class="infoscroll" id="infoScroll">
+                <ol class="showlist" id="infoList"></ol>
+            </div>
+            <div class="infofoot"><button class="primary full" id="infoBook">Book</button></div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>

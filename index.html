@@ -2,6 +2,10 @@
 <html lang="ml">
 
 <head>
+    <script>
+        /* Old GitHub Pages address -> Netlify site. Runs only on github.io, so it never loops on Netlify. */
+        if (/(^|\.)github\.io$/i.test(location.hostname)) { location.replace('https://visual-theatre.netlify.app' + location.pathname.replace(/^\/Visual-Theatre\/?/i, '/') + location.search + location.hash) }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#087a45">

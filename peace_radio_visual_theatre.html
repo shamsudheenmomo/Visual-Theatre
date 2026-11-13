@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#087a45">
+<title>Peace Radio | Visual Theatre</title>
+<style>
+:root{color-scheme:light;--green:#087a45;--green2:#0b9857;--deep:#063d2a;--mint:#e9f7ef;--ink:#17251e;--muted:#68776f;--line:#e2ebe5;--white:#fff;--gold:#e8b95b}
+*{box-sizing:border-box}body{margin:0;background:#f6faf7;color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Malayalam",Arial,sans-serif}
+header{background:linear-gradient(120deg,#053d29,#087a45 65%,#12a565);color:white;padding:16px max(5vw,20px) 58px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:20px;max-width:1180px;margin:auto}
+.brand{display:flex;align-items:center;gap:13px}.brand img{width:150px;max-height:52px;object-fit:contain;background:white;border-radius:9px;padding:5px}.brandfallback{font-size:24px;font-weight:800;letter-spacing:-1px}.brandfallback span{color:#b8f0d0}
+nav{display:flex;gap:22px;align-items:center}nav a{color:#eafff1;text-decoration:none;font-size:14px;font-weight:600}
+.hero{max-width:1180px;margin:56px auto 0;display:grid;grid-template-columns:1.3fr .7fr;gap:30px;align-items:center}
+.eyebrow{color:#b8f0d0;font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(34px,5vw,58px);line-height:1.12;margin:12px 0 16px;letter-spacing:-1.5px}.hero p{color:#e0f4e8;line-height:1.8;max-width:650px;margin:0}
+.hero-card{background:#ffffff14;border:1px solid #ffffff35;border-radius:22px;padding:24px;backdrop-filter:blur(8px)}
+.hero-card strong{font-size:38px;display:block}.hero-card span{color:#d6f2e1;font-size:14px}
+main{max-width:1180px;margin:-25px auto 70px;padding:0 20px}
+.searchbar{background:white;border:1px solid var(--line);box-shadow:0 12px 35px #123d2510;border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center}
+.searchbar input{flex:1;min-width:0;border:0;outline:0;font-size:15px;padding:10px;background:#fff;color:var(--ink)}.searchbar select{border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--ink);background:#fff}
+.sectionhead{display:flex;justify-content:space-between;align-items:end;margin:38px 0 18px;gap:20px}.sectionhead h2{margin:0;font-size:25px}.sectionhead p{margin:5px 0 0;color:var(--muted);font-size:14px}
+.count{background:var(--mint);color:var(--green);padding:8px 12px;border-radius:30px;font-size:13px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:white;border:1px solid var(--line);border-radius:17px;overflow:hidden;transition:.2s;display:flex;flex-direction:column}.card:hover{transform:translateY(-3px);box-shadow:0 12px 28px #0c472015}
+.poster{height:120px;background:linear-gradient(135deg,#e6f5eb,#c8ead5);display:flex;align-items:center;justify-content:center;position:relative;color:var(--green);font-size:34px;font-weight:900}
+.poster small{position:absolute;top:12px;left:13px;background:#ffffffd9;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:800;color:var(--deep)}
+.poster svg{height:96px;width:auto;display:block}.cardbody{padding:16px;display:flex;flex-direction:column;flex:1}.card h3{font-size:17px;line-height:1.5;margin:0 0 10px}.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-bottom:15px}
+.card button,.primary{border:0;border-radius:10px;background:var(--green);color:white;font-weight:800;padding:12px 15px;cursor:pointer}.card button:hover,.primary:hover{background:var(--deep)}
+.card button{margin-top:auto}.empty{grid-column:1/-1;text-align:center;padding:45px;color:var(--muted);background:white;border:1px dashed var(--line);border-radius:16px}
+footer{background:#073b29;color:#d8eee1;padding:32px 20px;text-align:center;font-size:13px;line-height:1.8}footer strong{color:white}
+.modalback{display:none;position:fixed;inset:0;background:#071b12a8;z-index:5;align-items:center;justify-content:center;padding:16px}.modalback.open{display:flex}
+.modal{background:white;width:min(520px,100%);max-height:92vh;overflow:auto;border-radius:20px;padding:24px;box-shadow:0 25px 80px #0004}
+.modalhead{display:flex;justify-content:space-between;gap:15px;align-items:start}.modal h2{margin:0 0 6px;font-size:22px}.modal p{color:var(--muted);margin:0 0 18px;font-size:14px}.close{border:0;background:#eef5f0;border-radius:50%;width:34px;height:34px;font-size:20px;cursor:pointer}
+label{display:block;font-size:13px;font-weight:750;margin:13px 0 6px}.modal input,.modal select{width:100%;padding:12px;border:1px solid #d9e5dd;border-radius:10px;font:inherit;background:white;color:var(--ink);color-scheme:light;outline:0}.modal input::placeholder{color:#8a978f}.modal input:focus,.modal select:focus{border-color:var(--green);box-shadow:0 0 0 3px #087a4528}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.summary{background:var(--mint);border-radius:12px;padding:13px;margin:16px 0;color:var(--deep);font-size:14px;line-height:1.7}
+.full{width:100%;margin-top:8px}.note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:12px}
+.confirm{display:none;text-align:center}.confirm .ticketid{font-size:30px;letter-spacing:3px;font-weight:900;color:var(--green);background:var(--mint);padding:14px;border-radius:12px;margin:15px 0}
+.card button:disabled{background:#b9c7bf;cursor:not-allowed}.card button:disabled:hover{background:#b9c7bf}.primary:disabled{opacity:.6;cursor:wait}
+.status{display:none;margin:18px 0 0;padding:12px 14px;border-radius:12px;background:#fff6e0;border:1px solid #f0dca8;color:#6b4e08;font-size:13px;line-height:1.6}.status button{border:0;background:none;color:var(--green);font-weight:800;cursor:pointer;text-decoration:underline;padding:0;margin-left:6px;font:inherit}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}.hero-card{display:none}}
+@media(max-width:560px){nav{display:none}.brand img{width:125px}.hero{margin-top:38px}.grid{grid-template-columns:1fr}.searchbar{flex-wrap:wrap}.searchbar input{flex-basis:100%}.searchbar select{flex:1}.sectionhead h2{font-size:21px}.two{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="brand">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Peaceradio-logo-v3%20Logo%20and%20text.png" alt="Peace Radio logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <div class="brandfallback" style="display:none">peace<span>radio</span></div>
+    </div>
+    <nav><a href="#shows">Sections</a><a href="#about">About</a></nav>
+  </div>
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Peace Radio presents</div>
+      <h1>Visual Theatre</h1>
+      <p>അറിവും ചിന്തയും പകരുന്ന ഡോക്യുമെന്ററികൾ ഒരിടത്ത്. നിങ്ങളുടെ ഇഷ്ടപ്പെട്ട പ്രദർശനം തിരഞ്ഞെടുക്കൂ, സീറ്റ് ബുക്ക് ചെയ്യൂ.</p>
+    </div>
+    <div class="hero-card"><strong>6</strong><span>Sections to explore</span><hr style="border:0;border-top:1px solid #ffffff40;margin:18px 0"><strong>One space.</strong><span>Stories that make you think.</span></div>
+  </div>
+</header>
+<main id="shows">
+  <div class="searchbar">
+    <input id="search" type="search" placeholder="വിഭാഗം തിരയുക / Search sections">
+      </div>
+  <div class="status" id="status"></div>
+  <div class="sectionhead"><div><h2>Explore Sections</h2><p>നിങ്ങൾക്ക് കാണാൻ താൽപ്പര്യമുള്ള വിഷയം തിരഞ്ഞെടുക്കൂ.</p></div><span class="count" id="count">6 Sections</span></div>
+  <div class="grid" id="grid"></div>
+</main>
+<footer id="about"><strong>Peace Radio · Visual Theatre</strong><br>Wisdom Islamic Organization<span id="demoNote"><br>ഇത് ആദ്യഘട്ട frontend demo ആണ്. Live seat availability, booking storage, admin & kiosk dashboard എന്നിവ Google Sheets + Apps Script ബന്ധിപ്പിച്ചശേഷം പ്രവർത്തിക്കും.</span></footer>
+
+<div class="modalback" id="modalback">
+ <div class="modal">
+  <div id="bookingform">
+   <div class="modalhead"><div><h2 id="modalTitle">Book your seats</h2><p id="modalDuration"></p></div><button class="close" id="close" aria-label="Close">×</button></div>
+   <label for="customer">പേര് / Name</label><input id="customer" placeholder="Your name" autocomplete="name">
+   <label for="mobile">WhatsApp Mobile Number</label><input id="mobile" type="tel" placeholder="10-digit mobile number" inputmode="numeric">
+   <label for="showtime">Show slot</label><select id="showtime"><option>Afternoon – 12:00 PM to 3:00 PM</option><option>Full Day – 10:00 AM to 6:00 PM</option><option>Sunday – 8:00 AM to 12:00 PM</option></select>
+   <div class="two"><div><label for="male">Male tickets</label><input id="male" type="number" min="0" max="10" value="0"></div><div><label for="female">Female tickets</label><input id="female" type="number" min="0" max="10" value="0"></div></div>
+   <div class="summary" id="summary">ആകെ ടിക്കറ്റുകൾ: 0<br>Demo capacity മാത്രം — live availability ഇനിയും connect ചെയ്തിട്ടില്ല.</div>
+   <button class="primary full" id="confirm">Continue to WhatsApp</button>
+   <div class="note" id="formNote">ഈ demo-യിൽ booking Google Sheets-ൽ save ചെയ്യില്ല. WhatsApp തുറന്ന് തയ്യാറാക്കിയ booking request അയയ്ക്കാം. Live confirmation-നായി Apps Script/API പിന്നീട് ചേർക്കണം.</div>
+  </div>
+  <div class="confirm" id="confirmation"><div style="font-size:42px">✓</div><h2 id="confTitle">Booking request prepared</h2><p>നിങ്ങളുടെ Booking ID:</p><div class="ticketid" id="ticketid"></div><p id="ticketdetails"></p><button class="primary full" id="sendwa">Open WhatsApp</button><button class="close" id="done" style="margin-top:12px;border-radius:10px;width:100%">Close</button><div class="note" id="confNote">WhatsApp message അയച്ചാൽ മാത്രമേ request staff-ന് ലഭിക്കൂ. ഇത് live confirmed ticket അല്ല.</div></div>
+ </div>
+</div>
+<script>
+/* ===== CONFIGURATION =====
+   APPS_SCRIPT_URL : paste your deployed Apps Script Web App URL (ends with /exec).
+                     Leave empty to run in DEMO mode (no backend, random booking ID).
+   WHATSAPP_NUMBER : optional, digits only with country code (e.g. 919876543210).
+                     Leave empty to let the visitor pick the WhatsApp contact. */
+const CONFIG={APPS_SCRIPT_URL:'https://script.google.com/macros/s/AKfycbwPOCveiO0T2XzbVTcDx6D54re_K3HD87WI8mhNF9EVR6Ga1CwiR9cpYK9O57uzx6zcNQ/exec',WHATSAPP_NUMBER:''};
+const LIVE=!!CONFIG.APPS_SCRIPT_URL.trim();
+const shows = [
+["ആത്മീയതയും ജീവിതക്രമവും",66],["ചരിത്രവും വ്യക്തിത്വ വികസനവും",63.5],["ചരിത്രസ്മരണകളും ഭാവിലോകവും",72],["അറിവും സദാചാരവും",67],["ശാസ്ത്രവും സാമൂഹിക ചിന്തയും",56.5],["സമകാലിക ലോകവും സമൂഹവും",46]
+];
+const fmt = n => {let m=Math.floor(n),s=Math.round((n-m)*60);return s?`${m} മിനിറ്റ് ${s} സെക്കൻഡ്`:`${m} മിനിറ്റ്`};
+const ico=inner=>`<svg viewBox="0 0 120 100" aria-hidden="true"><circle cx="60" cy="50" r="44" fill="#fff" opacity=".6"/><g fill="none" stroke="#087a45" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${inner}</g></svg>`;
+const icons=[
+ico(`<path d="M36 76C36 56 48 46 60 42C72 46 84 56 84 76Z" fill="#e9f7ef"/><path d="M60 42V36"/><path d="M66 14A9 9 0 1 0 66 32A12 12 0 0 1 66 14Z" fill="#e8b95b" stroke="none"/><path d="M28 76H92"/><path d="M54 76V66A6 6 0 0 1 66 66V76"/>`),
+ico(`<path d="M28 82H92V36H76V50H60V64H44V78H28Z" fill="#e9f7ef"/><path d="M84 36V14"/><path d="M84 14L102 20L84 26Z" fill="#e8b95b"/>`),
+ico(`<path d="M48 26H72C72 42 62 46 60 52C62 58 72 62 72 78H48C48 62 58 58 60 52C58 46 48 42 48 26Z" fill="#e9f7ef"/><path d="M44 26H76M44 78H76"/><path d="M53 31H67C66 38 62 42 60 44C58 42 54 38 53 31Z" fill="#e8b95b" stroke="none"/><path d="M52 76C54 69 58 65 60 63C62 65 66 69 68 76Z" fill="#e8b95b" stroke="none"/><path d="M24 34H36M26 34V76M34 34V76M24 76H36"/><path d="M92 28L94 34L100 36L94 38L92 44L90 38L84 36L90 34Z" fill="#e8b95b" stroke="none"/>`),
+ico(`<circle cx="60" cy="20" r="3.5" fill="#e8b95b" stroke="none"/><path d="M60 24V72"/><path d="M36 32H84"/><path d="M36 32L28 50M36 32L44 50M28 50H44C44 58 28 58 28 50Z" fill="#e9f7ef"/><path d="M84 32L76 50M84 32L92 50M76 50H92C92 58 76 58 76 50Z" fill="#e9f7ef"/><path d="M32 74C44 70 54 70 60 74C66 70 76 70 88 74V88C76 84 66 84 60 88C54 84 44 84 32 88Z" fill="#e9f7ef"/>`),
+ico(`<ellipse cx="60" cy="50" rx="34" ry="13"/><ellipse cx="60" cy="50" rx="34" ry="13" transform="rotate(60 60 50)"/><ellipse cx="60" cy="50" rx="34" ry="13" transform="rotate(120 60 50)"/><circle cx="60" cy="50" r="6" fill="#e8b95b"/><circle cx="94" cy="50" r="3.5" fill="#063d2a" stroke="none"/><circle cx="77" cy="79.4" r="3.5" fill="#063d2a" stroke="none"/><circle cx="43" cy="79.4" r="3.5" fill="#063d2a" stroke="none"/>`),
+ico(`<circle cx="52" cy="56" r="26" fill="#e9f7ef"/><ellipse cx="52" cy="56" rx="11" ry="26"/><path d="M26 56H78M31 42H73M31 70H73"/><circle cx="86" cy="28" r="3" fill="#e8b95b"/><path d="M86 20A8 8 0 0 1 94 28M86 12A16 16 0 0 1 102 28"/>`)
+];
+/* ===== Live backend helpers (Google Apps Script) ===== */
+let liveShows=[],loaded=false,failed=false,selectedIdx=0;
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function waBase(){return 'https://wa.me/'+String(CONFIG.WHATSAPP_NUMBER||'').replace(/\D/g,'')}
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fmtDate(v){const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(v||''));return m?(+m[3])+' '+MONTHS[+m[2]-1]+' '+m[1]:String(v||'')}
+function slotLabel(x){return [x.SlotType,fmtDate(x.ShowDate),[x.StartTime,x.EndTime].filter(Boolean).join('–')].filter(Boolean).join(' · ')}
+/* A sheet row belongs to section N when its DocumentaryID is N (1-6) or its Title equals the section title. */
+function showsFor(i){const t=shows[i][0].trim(),td=todayStr();
+ return liveShows.filter(x=>String(x.Status).toUpperCase()==='ACTIVE'&&(String(x.DocumentaryID).trim()===String(i+1)||String(x.Title).trim()===t)&&!(/^\d{4}-\d{2}-\d{2}$/.test(x.ShowDate)&&x.ShowDate<td))
+ .sort((a,b)=>(String(a.ShowDate)+String(a.StartTime)).localeCompare(String(b.ShowDate)+String(b.StartTime)))}
+function sectionInfo(i){const base='Book / കൂടുതൽ വിവരങ്ങൾ';
+ if(!LIVE)return{label:'Peace Radio',btn:base};
+ if(failed)return{label:'Unavailable',btn:base,dis:true};
+ if(!loaded)return{label:'Loading…',btn:base,dis:true};
+ const l=showsFor(i);if(!l.length)return{label:'No shows yet',btn:'No shows scheduled',dis:true};
+ const n=l.reduce((a,x)=>a+(+x.SeatsAvailable||0),0);
+ return n?{label:n+' seats left',btn:base}:{label:'Fully booked',btn:'Fully booked',dis:true}}
+function curShow(){return liveShows.find(x=>String(x.ShowID)===document.getElementById('showtime').value)}
+function fillSlots(i,keep){const sel=document.getElementById('showtime');sel.innerHTML='';
+ showsFor(i).forEach(x=>{const left=+x.SeatsAvailable||0,o=new Option(slotLabel(x)+(left?' – '+left+' seats left':' – Fully booked'),x.ShowID);o.disabled=!left;sel.add(o)});
+ const opts=[...sel.options],pick=opts.find(o=>o.value===String(keep)&&!o.disabled)||opts.find(o=>!o.disabled);if(pick)sel.value=pick.value}
+async function loadShows(){const st=document.getElementById('status');
+ try{const url=CONFIG.APPS_SCRIPT_URL.trim(),r=await fetch(url+(url.includes('?')?'&':'?')+'action=getShows'),d=await r.json();
+  if(!d.ok)throw new Error(d.message||'Could not load shows.');
+  liveShows=d.shows||[];loaded=true;failed=false;st.style.display='none'}
+ catch(e){failed=!loaded;st.innerHTML='ഷോ വിവരങ്ങൾ ലോഡ് ചെയ്യാനായില്ല. <button onclick="loadShows()">Retry</button>';st.style.display='block'}
+ render()}
+async function liveBook(name,mobile,m,f){
+ const sh=curShow();if(!sh){alert('Please select a show slot.');return}
+ const ma=+sh.MaleAvailable||0,fa=+sh.FemaleAvailable||0;
+ if(m>ma||f>fa){alert('Not enough seats. Male left: '+ma+', Female left: '+fa+'.');return}
+ const btn=document.getElementById('confirm'),label=btn.textContent;btn.disabled=true;btn.textContent='Booking…';
+ try{
+  const r=await fetch(CONFIG.APPS_SCRIPT_URL.trim(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'book',showId:sh.ShowID,customerName:name,phone:mobile,maleTickets:m,femaleTickets:f})});
+  const d=await r.json();
+  if(!d.ok){alert(d.message||'Booking failed. Please try again.');await loadShows();fillSlots(selectedIdx,sh.ShowID);updateSummary();return}
+  const b=d.booking,slotText=slotLabel(sh);
+  const text=['Peace Radio – Visual Theatre Booking','Booking ID: '+b.bookingId,'Name: '+name,'Mobile: '+mobile,'Section: '+b.documentaryTitle,'Duration: '+fmt(shows[selectedIdx][1]),'Show: '+slotText,'Male: '+b.maleTickets,'Female: '+b.femaleTickets,'Total: '+b.totalTickets].join('\n');
+  waUrl=waBase()+'?text='+encodeURIComponent(text);
+  document.getElementById('ticketid').textContent=b.bookingId;
+  document.getElementById('ticketdetails').textContent=b.documentaryTitle+' · '+slotText+' · '+b.totalTickets+' tickets';
+  document.getElementById('confTitle').textContent='Booking confirmed';
+  document.getElementById('confNote').textContent='നിങ്ങളുടെ Booking ID സൂക്ഷിച്ചുവെക്കുക — പ്രദർശന ദിവസം check-in-ന് ഇത് കാണിക്കണം. WhatsApp-ൽ ഒരു കോപ്പി അയച്ച് സൂക്ഷിക്കാവുന്നതാണ്.';
+  document.getElementById('sendwa').textContent='Send copy on WhatsApp';
+  document.getElementById('sendwa').onclick=()=>window.open(waUrl,'_blank');
+  document.getElementById('bookingform').style.display='none';document.getElementById('confirmation').style.display='block';
+  loadShows();
+ }catch(e){alert('Could not reach the booking server. Please check your connection and try again.')}
+ finally{btn.disabled=false;btn.textContent=label}}
+const grid=document.getElementById('grid'), search=document.getElementById('search');
+function render(){let q=search.value.trim().toLowerCase();let arr=shows.map((s,i)=>({...s,id:i+1})).filter(s=>s[0].toLowerCase().includes(q));
+document.getElementById('count').textContent=arr.length+(arr.length===1?' Section':' Sections');grid.innerHTML=arr.length?arr.map(s=>{const info=sectionInfo(s.id-1);return `<article class="card"><div class="poster"><small>SECTION ${String(s.id).padStart(2,'0')}</small>${icons[s.id-1]}</div><div class="cardbody"><h3>${s[0]}</h3><div class="meta"><span>◷ ${fmt(s[1])}</span><span>${info.label}</span></div><button ${info.dis?'disabled ':''}onclick="openBooking(${s.id-1})">${info.btn}</button></div></article>`}).join(''):'<div class="empty">ഈ തിരച്ചിലിൽ section കണ്ടെത്താനായില്ല.</div>'}
+search.addEventListener('input',render);render();
+let selected=null,waUrl='';
+const back=document.getElementById('modalback');
+function openBooking(i){selected=shows[i];document.getElementById('modalTitle').textContent=selected[0];document.getElementById('modalDuration').textContent=fmt(selected[1]);document.getElementById('bookingform').style.display='block';document.getElementById('confirmation').style.display='none';document.getElementById('customer').value='';document.getElementById('mobile').value='';document.getElementById('male').value=0;document.getElementById('female').value=0;selectedIdx=i;if(LIVE)fillSlots(i);updateSummary();back.classList.add('open')}
+window.openBooking=openBooking;
+function updateSummary(){let m=+document.getElementById('male').value||0,f=+document.getElementById('female').value||0,extra='Demo capacity മാത്രം — live availability ഇനിയും connect ചെയ്തിട്ടില്ല.';
+if(LIVE){const sh=curShow();if(sh){const ma=+sh.MaleAvailable||0,fa=+sh.FemaleAvailable||0;document.getElementById('male').max=ma;document.getElementById('female').max=fa;extra='Seats left — Male: '+ma+' · Female: '+fa}else extra='ഈ section-ന് ഇപ്പോൾ ലഭ്യമായ ഷോകളില്ല.'}
+document.getElementById('summary').innerHTML=`ആകെ ടിക്കറ്റുകൾ: <b>${m+f}</b><br>Male: ${m} · Female: ${f}<br>${extra}`}
+document.getElementById('male').addEventListener('input',updateSummary);document.getElementById('female').addEventListener('input',updateSummary);
+document.getElementById('close').onclick=()=>back.classList.remove('open');document.getElementById('done').onclick=()=>back.classList.remove('open');back.addEventListener('click',e=>{if(e.target===back)back.classList.remove('open')});
+document.getElementById('confirm').onclick=async()=>{let name=document.getElementById('customer').value.trim(),mobile=document.getElementById('mobile').value.replace(/\D/g,''),m=+document.getElementById('male').value||0,f=+document.getElementById('female').value||0,slot=document.getElementById('showtime').value;if(!name||mobile.length<10||m+f<1){alert('പേരും ശരിയായ mobile number-ഉം കുറഞ്ഞത് ഒരു ticket-ഉം നൽകുക.');return}
+if(LIVE){await liveBook(name,mobile,m,f);return}
+let id='PR'+String(Math.floor(100000+Math.random()*900000));let msg=`Peace Radio – Visual Theatre Booking Request%0ABooking ID: ${id}%0AName: ${encodeURIComponent(name)}%0AMobile: ${mobile}%0ASection: ${encodeURIComponent(selected[0])}%0ADuration: ${encodeURIComponent(fmt(selected[1]))}%0ASlot: ${encodeURIComponent(slot)}%0AMale: ${m}%0AFemale: ${f}%0ATotal: ${m+f}%0APlease confirm my booking.`;
+waUrl=waBase()+'?text='+msg;document.getElementById('ticketid').textContent=id;document.getElementById('ticketdetails').textContent=`${selected[0]} · ${slot} · ${m+f} tickets`;document.getElementById('bookingform').style.display='none';document.getElementById('confirmation').style.display='block';document.getElementById('sendwa').onclick=()=>window.open(waUrl,'_blank')};
+document.getElementById('showtime').addEventListener('change',updateSummary);
+if(LIVE){document.getElementById('confirm').textContent='Confirm booking';document.getElementById('formNote').textContent='ലൈവ് സീറ്റ് ലഭ്യത അനുസരിച്ച് booking ഉടൻ confirm ആകും. Booking ID സൂക്ഷിച്ചുവെക്കുക — check-in-ന് ആവശ്യമാണ്.';document.getElementById('demoNote').style.display='none';loadShows()}
+</script>
+</body></html>

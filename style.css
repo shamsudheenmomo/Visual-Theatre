@@ -37,6 +37,10 @@ body {
     font-family: system-ui, -apple-system, "Noto Sans Malayalam", Arial, sans-serif
 }
 
+body.modal-open {
+    overflow: hidden
+}
+
 header {
     background: linear-gradient(120deg, #053d29, #087a45 65%, #12a565);
     color: white;

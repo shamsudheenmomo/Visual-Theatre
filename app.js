@@ -572,6 +572,12 @@ render();
 let selected = null,
    waUrl = "";
 const back = document.getElementById("modalback");
+function syncModalState() {
+   document.body.classList.toggle(
+      "modal-open",
+      back.classList.contains("open") || infoBack.classList.contains("open"),
+   );
+}
 function openBooking(i) {
    selected = shows[i];
    document.getElementById("modalTitle").textContent = selected[0];
@@ -586,6 +592,11 @@ function openBooking(i) {
    if (LIVE) fillSlots(i);
    updateSummary();
    back.classList.add("open");
+   syncModalState();
+}
+function closeBooking() {
+   back.classList.remove("open");
+   syncModalState();
 }
 window.openBooking = openBooking;
 
@@ -687,10 +698,12 @@ function showInfo(i) {
 function openInfo(i) {
    showInfo(i);
    infoBack.classList.add("open");
+   syncModalState();
    document.getElementById("infoClose").focus();
 }
 function closeInfo() {
    infoBack.classList.remove("open");
+   syncModalState();
 }
 window.openInfo = openInfo;
 window.showInfo = showInfo;
@@ -699,7 +712,13 @@ infoBack.addEventListener("click", (e) => {
    if (e.target === infoBack) closeInfo();
 });
 document.addEventListener("keydown", (e) => {
-   if (e.key === "Escape" && infoBack.classList.contains("open")) closeInfo();
+   if (e.key !== "Escape") return;
+   if (infoBack.classList.contains("open")) closeInfo();
+   else if (back.classList.contains("open")) {
+      const active = document.activeElement;
+      closeBooking();
+      if (active.matches(".cardbtns button:not(.ghost)")) active.blur();
+   }
 });
 document.getElementById("infoBook").onclick = () => {
    const i = infoIdx;
@@ -734,10 +753,10 @@ function updateSummary() {
 }
 document.getElementById("male").addEventListener("input", updateSummary);
 document.getElementById("female").addEventListener("input", updateSummary);
-document.getElementById("close").onclick = () => back.classList.remove("open");
-document.getElementById("done").onclick = () => back.classList.remove("open");
+document.getElementById("close").onclick = closeBooking;
+document.getElementById("done").onclick = closeBooking;
 back.addEventListener("click", (e) => {
-   if (e.target === back) back.classList.remove("open");
+   if (e.target === back) closeBooking();
 });
 document.getElementById("confirm").onclick = async () => {
    let name = document.getElementById("customer").value.trim(),

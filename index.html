@@ -40,7 +40,11 @@
                     <div class="hc-s gone" id="hcNow"></div>
                     <div class="hc-s gone" id="hcNext"></div>
                 </div>
-                <div class="hc-dots" id="hcDots"></div>
+                <div class="hc-nav" id="hcNav">
+                    <button type="button" class="hc-arrow" id="hcPrevBtn" aria-label="Previous show">‹</button>
+                    <div class="hc-dots" id="hcDots"></div>
+                    <button type="button" class="hc-arrow" id="hcNextBtn" aria-label="Next show">›</button>
+                </div>
             </div>
         </div>
     </header>
@@ -120,6 +124,32 @@
             <div class="infofoot"><button class="primary full" id="infoBook">Book</button></div>
         </div>
     </div>
+    <div class="modalback" id="heroback">
+        <div class="modal heromodal" role="dialog" aria-modal="true" aria-label="Show details">
+            <button class="close heroclose" id="heroClose" aria-label="Close">×</button>
+            <div class="hm-pager" id="heroPager" hidden>
+                <button type="button" id="heroPrev" aria-label="Previous show">‹</button>
+                <span id="heroPagerLabel"></span>
+                <button type="button" id="heroNextB" aria-label="Next show">›</button>
+            </div>
+            <div class="herobody">
+                <div class="hm-info">
+                    <div class="hero-card hm-card" id="heroDetail"></div>
+                    <div class="hm-facts" id="heroFacts"></div>
+                </div>
+                <div class="hm-actions">
+                    <button type="button" class="primary" id="heroBook">Book</button>
+                    <button type="button" class="hm-ghost" id="heroInfo">കൂടുതൽ വിവരങ്ങൾ</button>
+                </div>
+                <aside class="hm-qr" id="heroQr">
+                    <div class="hm-qrimg" id="heroQrImg"></div>
+                    <strong>Scan for more information</strong>
+                    <small>സ്കാൻ ചെയ്ത് കൂടുതൽ വിവരങ്ങൾ അറിയൂ</small>
+                </aside>
+            </div>
+        </div>
+    </div>
+    <script src="vendor/qrcode.min.js"></script>
     <script src="app.js"></script>
 </body>
 

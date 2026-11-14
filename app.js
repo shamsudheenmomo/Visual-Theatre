@@ -351,7 +351,8 @@ async function liveBook(name, mobile, m, f) {
 const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 let heroAvail = ["hcStatic"],
    heroActive = "hcStatic",
-   heroHover = false;
+   heroHover = false,
+   heroPauseUntil = 0; /* after a manual slide, auto-rotation waits until this time */
 function istNow() {
    const p = new Intl.DateTimeFormat("en-GB", {
       timeZone: "Asia/Kolkata",
@@ -470,7 +471,8 @@ function heroHTML(o, kind, now, more, gap) {
       "</span>"
    );
 }
-let heroT = 0;
+let heroT = 0,
+   heroCache = {}; /* data behind the live cards (hcNow / hcNext); the hero details modal reads it */
 /* Re-checks the sheet schedule against the current IST time. Runs after every data load, at the exact moment a
    show starts or ends (so cards switch on time), at least every 30 s (for the countdowns), and when the tab wakes up. */
 function heroTick() {
@@ -478,6 +480,7 @@ function heroTick() {
       now = istNow();
    let avail = [],
       edge = Infinity;
+   heroCache = {};
    if (LIVE && loaded && !failed) {
       const list = liveShows
          .filter((x) => String(x.Status).toUpperCase() === "ACTIVE")
@@ -491,26 +494,20 @@ function heroTick() {
             if (t > now && t < edge) edge = t;
          }),
       );
-      if (cur.length) {
-         el("hcNow").innerHTML = heroHTML(
-            cur[0],
-            "now",
-            now,
-            cur.length - 1,
-            false,
-         );
-         avail.push("hcNow");
-      }
-      if (up.length) {
-         el("hcNext").innerHTML = heroHTML(
+      const put = (id, o, kind, more, gap) => {
+         heroCache[id] = { o, kind, more, gap };
+         el(id).innerHTML = heroHTML(o, kind, now, more, gap);
+         avail.push(id);
+      };
+      if (cur.length) put("hcNow", cur[0], "now", cur.length - 1, false);
+      if (up.length)
+         put(
+            "hcNext",
             up[0],
             "next",
-            now,
             up.filter((o) => o.start === up[0].start).length - 1,
             !cur.length,
          );
-         avail.push("hcNext");
-      }
    }
    if (!avail.length) avail = ["hcStatic"];
    ["hcStatic", "hcNow", "hcNext"].forEach((id) =>
@@ -526,21 +523,26 @@ function heroTick() {
    heroAvail = avail;
    const dots = el("hcDots");
    dots.style.display = avail.length > 1 ? "flex" : "none";
+   el("hcNav").style.display = avail.length > 1 ? "flex" : "none";
    dots.innerHTML = avail
       .map((id) => '<b class="' + (id === heroActive ? "on" : "") + '"></b>')
       .join("");
+   heroSyncClickable();
+   renderHeroModal();
    clearTimeout(heroT);
    heroT = setTimeout(
       heroTick,
       Math.min(30000, Math.max(1000, edge - now + 400)),
    );
 }
-function heroRotate() {
-   if (heroAvail.length < 2 || heroHover) return;
-   const next =
-      heroAvail[(heroAvail.indexOf(heroActive) + 1) % heroAvail.length],
+/* Slides to the next (step 1) or previous (step -1) card. Used by the timer and by the arrows. */
+function heroGo(step) {
+   const n = heroAvail.length;
+   if (n < 2) return;
+   const next = heroAvail[(heroAvail.indexOf(heroActive) + step + n) % n],
       A = document.getElementById(heroActive),
       B = document.getElementById(next);
+   document.querySelector(".hc-stage").classList.toggle("rev", step < 0);
    A.classList.remove("active");
    A.classList.add("leaving");
    B.classList.remove("leaving");
@@ -552,6 +554,17 @@ function heroRotate() {
       .forEach((b, i) =>
          b.classList.toggle("on", heroAvail[i] === heroActive),
       );
+   heroSyncClickable();
+}
+function heroRotate() {
+   if (heroAvail.length < 2 || heroHover || Date.now() < heroPauseUntil)
+      return;
+   heroGo(1);
+}
+/* Manual slide (arrows / keyboard): also holds off auto-rotation for a while so the card doesn't jump away. */
+function heroManual(step) {
+   heroPauseUntil = Date.now() + 12000;
+   heroGo(step);
 }
 const grid = document.getElementById("grid");
 function render() {
@@ -575,7 +588,9 @@ const back = document.getElementById("modalback");
 function syncModalState() {
    document.body.classList.toggle(
       "modal-open",
-      back.classList.contains("open") || infoBack.classList.contains("open"),
+      back.classList.contains("open") ||
+         infoBack.classList.contains("open") ||
+         heroBack.classList.contains("open"),
    );
 }
 function openBooking(i) {
@@ -725,6 +740,203 @@ document.getElementById("infoBook").onclick = () => {
    closeInfo();
    openBooking(i);
 };
+
+/* ===== Hero card details modal =====
+   Clicking a live hero card (Now playing / Up next) opens a larger view of it: the same card content (heroHTML),
+   a QR code that opens that section's കൂടുതൽ വിവരങ്ങൾ modal, and a Book button. It stays open until closed. */
+const heroBack = document.getElementById("heroback"),
+   heroModal = heroBack.querySelector(".heromodal"),
+   heroCardEl = document.getElementById("heroCard");
+var heroPin = null; /* the show on screen in the modal: { key, idx, showId } */
+const slotKey = (o) =>
+   [o.x.ShowID, o.x.ShowDate, o.x.StartTime, o.idx].join("|");
+/* Address that opens the കൂടുതൽ വിവരങ്ങൾ modal of section i (handled by openInfoFromHash below). */
+function infoLink(i) {
+   const u = new URL(location.href);
+   u.search = "";
+   u.hash = "info=" + (i + 1);
+   return u.href;
+}
+function drawHeroQr(i) {
+   try {
+      const q = qrcode(0, "M");
+      q.addData(infoLink(i));
+      q.make();
+      document.getElementById("heroQrImg").innerHTML = q.createSvgTag({
+         cellSize: 4,
+         margin: 12 /* 3 modules of white around the code, so phones can scan it reliably */,
+         scalable: true,
+         alt:
+            "QR code: opens more information about Section " +
+            String(i + 1).padStart(2, "0"),
+      });
+      return true;
+   } catch (e) {
+      return false;
+   }
+}
+/* Seats left in one slot (a number), or null when the sheet row has no seat count. */
+function slotSeats(x) {
+   const n = +x.SeatsAvailable;
+   return x.SeatsAvailable != null &&
+      String(x.SeatsAvailable).trim() !== "" &&
+      isFinite(n)
+      ? n
+      : null;
+}
+/* Extra facts below the card: full date, section duration, seats left in this slot. */
+function heroFactsHTML(o) {
+   const x = o.x,
+      rows = [
+         [
+            "Date",
+            [dayName(x), fmtDate(x.ShowDate)].filter(Boolean).join(", "),
+         ],
+      ];
+   if (o.idx >= 0) rows.push(["Duration", fmt(shows[o.idx][1])]);
+   const n = slotSeats(x);
+   if (n !== null) rows.push(["Seats left", n > 0 ? String(n) : "Fully booked"]);
+   return rows
+      .filter((r) => r[1])
+      .map((r) => "<div><small>" + r[0] + "</small><b>" + esc(r[1]) + "</b></div>")
+      .join("");
+}
+/* Repaints the pinned show from the latest hero data, so the countdown and the Book button stay current. */
+function renderHeroModal() {
+   if (!heroPin) return;
+   const ids = Object.keys(heroCache),
+      id = ids.find((k) => slotKey(heroCache[k].o) === heroPin.key),
+      c = heroCache[id];
+   if (!c) return; /* show is no longer featured (ended or replaced): keep what is on screen */
+   document.getElementById("heroPager").hidden = ids.length < 2;
+   document.getElementById("heroPagerLabel").textContent =
+      ids.indexOf(id) + 1 + " / " + ids.length;
+   document.getElementById("heroDetail").innerHTML = heroHTML(
+      c.o,
+      c.kind,
+      istNow(),
+      c.more,
+      c.gap,
+   );
+   document.getElementById("heroFacts").innerHTML = heroFactsHTML(c.o);
+   const b = document.getElementById("heroBook"),
+      i = c.o.idx >= 0 ? sectionInfo(c.o.idx) : { btn: "Book", dis: true };
+   /* This show's own seats: a sold-out slot can't be booked from here even if the section has other slots. */
+   const soldOut = slotSeats(c.o.x) === 0;
+   b.disabled = !!i.dis || soldOut;
+   b.textContent = soldOut ? "Fully booked" : i.btn;
+}
+function pinHero(id) {
+   const c = heroCache[id];
+   if (!c) return;
+   const idx = c.o.idx,
+      hasQr = idx >= 0 && drawHeroQr(idx);
+   heroModal.classList.toggle("noqr", !hasQr);
+   heroModal.classList.toggle("noidx", idx < 0);
+   heroPin = {
+      key: slotKey(c.o),
+      idx: idx,
+      showId: String(c.o.x.ShowID || ""),
+   };
+   renderHeroModal();
+}
+function openHero() {
+   if (!heroCache[heroActive]) return;
+   pinHero(heroActive);
+   heroBack.classList.add("open");
+   syncModalState();
+   document.getElementById("heroClose").focus();
+}
+/* Arrows inside the modal switch between the live shows (Now playing / Up next). */
+function heroModalGo(step) {
+   const ids = Object.keys(heroCache),
+      n = ids.length;
+   if (n < 2 || !heroPin) return;
+   const cur = ids.findIndex((k) => slotKey(heroCache[k].o) === heroPin.key);
+   pinHero(ids[(cur + step + n) % n]);
+}
+function closeHero(refocus) {
+   heroPin = null;
+   heroBack.classList.remove("open");
+   syncModalState();
+   if (refocus !== false && heroCardEl.tabIndex === 0)
+      heroCardEl.focus({ preventScroll: true });
+}
+/* Only the live cards open the modal; the static intro card does nothing. */
+function heroSyncClickable() {
+   const live = !!heroCache[heroActive];
+   heroCardEl.classList.toggle("is-link", live);
+   if (live) {
+      heroCardEl.setAttribute("role", "button");
+      heroCardEl.setAttribute("aria-haspopup", "dialog");
+      heroCardEl.tabIndex = 0;
+   } else
+      ["role", "aria-haspopup", "tabindex"].forEach((a) =>
+         heroCardEl.removeAttribute(a),
+      );
+}
+heroCardEl.addEventListener("click", () => {
+   if (heroCache[heroActive]) openHero();
+});
+heroCardEl.addEventListener("keydown", (e) => {
+   if (e.target !== heroCardEl) return; /* keys on the arrow buttons are theirs */
+   if ((e.key === "Enter" || e.key === " ") && heroCache[heroActive]) {
+      e.preventDefault();
+      openHero();
+   } else if (e.key === "ArrowLeft") heroManual(-1);
+   else if (e.key === "ArrowRight") heroManual(1);
+});
+/* The arrows sit inside the clickable card, so their clicks must not also open the modal. */
+[
+   ["hcPrevBtn", -1],
+   ["hcNextBtn", 1],
+].forEach(([id, step]) =>
+   document.getElementById(id).addEventListener("click", (e) => {
+      e.stopPropagation();
+      heroManual(step);
+   }),
+);
+document.getElementById("heroPrev").onclick = () => heroModalGo(-1);
+document.getElementById("heroNextB").onclick = () => heroModalGo(1);
+document.getElementById("heroClose").onclick = () => closeHero();
+heroBack.addEventListener("click", (e) => {
+   if (e.target === heroBack) closeHero();
+});
+document.addEventListener("keydown", (e) => {
+   if (!heroBack.classList.contains("open")) return;
+   if (e.key === "Escape") closeHero(false);
+   else if (e.key === "ArrowLeft") heroModalGo(-1);
+   else if (e.key === "ArrowRight") heroModalGo(1);
+});
+/* Book / കൂടുതൽ വിവരങ്ങൾ hand over to the existing modals; booking opens with this show's slot picked. */
+document.getElementById("heroBook").onclick = () => {
+   const p = heroPin;
+   if (!p || p.idx < 0) return;
+   closeHero(false);
+   openBooking(p.idx);
+   if (LIVE && p.showId) {
+      fillSlots(p.idx, p.showId);
+      updateSummary();
+   }
+};
+document.getElementById("heroInfo").onclick = () => {
+   const p = heroPin;
+   if (!p || p.idx < 0) return;
+   closeHero(false);
+   openInfo(p.idx);
+};
+/* #info=N (N = section number) opens that section's കൂടുതൽ വിവരങ്ങൾ modal. This is what the QR code points to. */
+function openInfoFromHash() {
+   const m = /^#info=(\d+)$/.exec(location.hash);
+   if (!m) return;
+   try {
+      history.replaceState(null, "", location.pathname + location.search);
+   } catch (e) {}
+   const n = +m[1];
+   if (n >= 1 && n <= shows.length) openInfo(n - 1);
+}
+openInfoFromHash();
+window.addEventListener("hashchange", openInfoFromHash);
 function updateSummary() {
    let m = +document.getElementById("male").value || 0,
       f = +document.getElementById("female").value || 0,

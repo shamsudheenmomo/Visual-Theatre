@@ -810,3 +810,399 @@ label {
         gap: 8px
     }
 }
+
+/* ===== Hero card details modal (click a live hero card) ===== */
+.hero-card.is-link {
+    cursor: pointer;
+    transition: background .2s, border-color .2s
+}
+
+.hero-card.is-link:hover {
+    background: #ffffff22;
+    border-color: #ffffff60
+}
+
+.hero-card.is-link:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px
+}
+
+#hcNow::after,
+#hcNext::after {
+    content: "Details & QR code ›";
+    display: block;
+    margin-top: 14px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    color: #b8f0d0
+}
+
+/* Manual slide arrows on the hero card */
+.hc-nav {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 16px
+}
+
+.hc-nav .hc-dots {
+    margin-top: 0
+}
+
+.hc-arrow {
+    width: 32px;
+    height: 32px;
+    padding: 0 0 3px;
+    border: 1px solid #ffffff55;
+    border-radius: 50%;
+    background: #ffffff1f;
+    color: #fff;
+    font-family: inherit;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .2s
+}
+
+.hc-arrow:hover {
+    background: #ffffff40
+}
+
+.hc-arrow:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px
+}
+
+/* Going back: new card enters from the left, old one leaves to the right. */
+.hc-stage.rev .hc-s {
+    transform: translateX(-34px)
+}
+
+.hc-stage.rev .hc-s.active {
+    transform: none
+}
+
+.hc-stage.rev .hc-s.leaving {
+    transform: translateX(34px)
+}
+
+@media(prefers-reduced-motion:reduce) {
+    .hc-stage.rev .hc-s {
+        transform: translateX(-14px)
+    }
+
+    .hc-stage.rev .hc-s.active {
+        transform: none
+    }
+
+    .hc-stage.rev .hc-s.leaving {
+        transform: translateX(14px)
+    }
+}
+
+@media(max-width:560px) {
+    .hc-nav {
+        margin-top: 12px
+    }
+}
+
+/* Pager inside the modal: switch between Now playing / Up next */
+.hm-pager {
+    position: absolute;
+    top: 16px;
+    right: 62px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 34px;
+    padding: 0 3px;
+    border-radius: 20px;
+    background: #ffffff1f;
+    border: 1px solid #ffffff45
+}
+
+.hm-pager[hidden] {
+    display: none
+}
+
+.hm-pager button {
+    width: 28px;
+    height: 28px;
+    padding: 0 0 3px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #fff;
+    font-family: inherit;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer
+}
+
+.hm-pager button:hover {
+    background: #ffffff30
+}
+
+.hm-pager button:focus-visible {
+    outline: 2px solid #fff
+}
+
+.hm-pager span {
+    min-width: 42px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 800;
+    color: #d6f2e1
+}
+
+.modal.heromodal {
+    position: relative;
+    width: min(900px, 100%);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    max-height: 92vh;
+    max-height: 92dvh;
+    color: #fff;
+    background: linear-gradient(120deg, #053d29, #087a45 65%, #12a565);
+    border: 1px solid #ffffff35
+}
+
+.heroclose {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1
+}
+
+.herobody {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 38px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 270px;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "info qr" "actions qr";
+    gap: 26px 38px;
+    align-items: start
+}
+
+.hm-info {
+    grid-area: info;
+    min-width: 0
+}
+
+/* The card inside the modal is the hero card, just larger and without its own box. */
+.heromodal .hm-card {
+    background: none;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    backdrop-filter: none
+}
+
+.heromodal .hero-card strong {
+    font-size: 46px;
+    line-height: 1.15
+}
+
+.heromodal .hero-card .hc-title {
+    font-size: 34px;
+    line-height: 1.4;
+    margin: 0 0 8px
+}
+
+.heromodal .hero-card span {
+    font-size: 17px
+}
+
+.heromodal .hero-card .hc-tag {
+    font-size: 13px;
+    margin-bottom: 10px;
+    padding-right: 48px
+}
+
+.hm-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-top: 22px
+}
+
+.hm-facts:empty {
+    display: none
+}
+
+.hm-facts div {
+    background: #ffffff14;
+    border: 1px solid #ffffff30;
+    border-radius: 14px;
+    padding: 12px 14px
+}
+
+.hm-facts small {
+    display: block;
+    color: #b8f0d0;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 4px
+}
+
+.hm-facts b {
+    font-size: 16px;
+    line-height: 1.4
+}
+
+.hm-actions {
+    grid-area: actions;
+    align-self: end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px
+}
+
+.hm-actions button {
+    flex: 1 1 170px;
+    margin: 0;
+    padding: 15px 18px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer
+}
+
+.heromodal .hm-actions .primary {
+    background: var(--gold);
+    color: var(--deep)
+}
+
+.heromodal .hm-actions .primary:hover {
+    background: #f0c978
+}
+
+.heromodal .hm-actions .primary:disabled {
+    background: #ffffff2e;
+    color: #ffffffcc;
+    opacity: 1;
+    cursor: not-allowed
+}
+
+.hm-ghost {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid #ffffff80
+}
+
+.hm-ghost:hover {
+    background: #ffffff1f
+}
+
+.heromodal button:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 2px
+}
+
+.hm-qr {
+    grid-area: qr;
+    background: #fff;
+    color: var(--ink);
+    border-radius: 20px;
+    padding: 16px;
+    margin-top: 34px;
+    text-align: center;
+    box-shadow: 0 14px 40px #0004
+}
+
+.hm-qrimg svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    shape-rendering: crispEdges
+}
+
+.hm-qr strong {
+    display: block;
+    margin-top: 14px;
+    font-size: 15px
+}
+
+.hm-qr small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5
+}
+
+/* No QR (library missing) or section unknown: single column. */
+.heromodal.noqr .herobody,
+.heromodal.noidx .herobody {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas: "info" "actions"
+}
+
+.heromodal.noqr .hm-qr,
+.heromodal.noidx .hm-qr,
+.heromodal.noidx .hm-actions {
+    display: none
+}
+
+@media(max-width:760px) {
+    .herobody {
+        padding: 26px 20px 24px;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: none;
+        grid-template-areas: "info" "actions" "qr";
+        gap: 22px
+    }
+
+    .hm-actions {
+        align-self: stretch
+    }
+
+    .hm-qr {
+        width: min(260px, 100%);
+        justify-self: center;
+        margin-top: 0
+    }
+
+    .heroclose {
+        top: 12px;
+        right: 12px
+    }
+
+    .hm-pager {
+        top: 12px;
+        right: 58px
+    }
+
+    .heromodal .hero-card strong {
+        font-size: 34px
+    }
+
+    .heromodal .hero-card .hc-title {
+        font-size: 25px
+    }
+
+    .heromodal .hero-card span {
+        font-size: 15px
+    }
+
+    .heromodal .hero-card .hc-tag {
+        font-size: 12px;
+        margin-bottom: 14px
+    }
+
+    .hm-facts {
+        margin-top: 18px
+    }
+}

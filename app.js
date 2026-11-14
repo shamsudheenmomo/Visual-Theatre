@@ -632,14 +632,24 @@ render();
 let selected = null,
 	waUrl = "";
 const back = document.getElementById("modalback");
+let modalHistoryEntry = false;
 
 function syncModalState() {
-	document.body.classList.toggle(
-		"modal-open",
+	const isOpen =
 		back.classList.contains("open") ||
 		infoBack.classList.contains("open") ||
-		heroBack.classList.contains("open"),
+		heroBack.classList.contains("open");
+	document.body.classList.toggle(
+		"modal-open",
+		isOpen,
 	);
+	if (isOpen && !modalHistoryEntry) {
+		history.pushState(history.state, "", location.href);
+		modalHistoryEntry = true;
+	} else if (!isOpen && modalHistoryEntry) {
+		modalHistoryEntry = false;
+		history.back();
+	}
 }
 
 function openBooking(i) {
@@ -669,7 +679,7 @@ window.openBooking = openBooking;
 /* ===== Section details modal (കൂടുതൽ വിവരങ്ങൾ). Booking itself is still the existing openBooking(). ===== */
 const details = [
 	[
-		["ആത്മീയത നിറഞ്ഞ അറേബ്യ", 33],
+		["അധാർമികത നിറഞ്ഞ അറേബ്യ", 33],
 		["സ്ക്രീൻ അഡിക്ഷൻ", 19],
 		["മരണം", 6.5],
 		["അടയാളങ്ങൾ ബാക്കിയാക്കുക", 5],
@@ -770,9 +780,9 @@ function openInfo(i) {
 	document.getElementById("infoClose").focus();
 }
 
-function closeInfo() {
+function closeInfo(preserveHistory) {
 	infoBack.classList.remove("open");
-	syncModalState();
+	if (!preserveHistory) syncModalState();
 }
 
 window.openInfo = openInfo;
@@ -792,7 +802,7 @@ document.addEventListener("keydown", (e) => {
 });
 document.getElementById("infoBook").onclick = () => {
 	const i = infoIdx;
-	closeInfo();
+	closeInfo(true);
 	openBooking(i);
 };
 
@@ -927,10 +937,10 @@ function heroModalGo(step) {
 	pinHero(ids[(cur + step + n) % n]);
 }
 
-function closeHero(refocus) {
+function closeHero(refocus, preserveHistory) {
 	heroPin = null;
 	heroBack.classList.remove("open");
-	syncModalState();
+	if (!preserveHistory) syncModalState();
 	if (refocus !== false && heroCardEl.tabIndex === 0)
 		heroCardEl.focus({ preventScroll: true });
 }
@@ -987,7 +997,7 @@ document.addEventListener("keydown", (e) => {
 document.getElementById("heroBook").onclick = () => {
 	const p = heroPin;
 	if (!p || p.idx < 0) return;
-	closeHero(false);
+	closeHero(false, true);
 	openBooking(p.idx);
 	if (LIVE && p.showId) {
 		fillSlots(p.idx, p.showId);
@@ -997,9 +1007,18 @@ document.getElementById("heroBook").onclick = () => {
 document.getElementById("heroInfo").onclick = () => {
 	const p = heroPin;
 	if (!p || p.idx < 0) return;
-	closeHero(false);
+	closeHero(false, true);
 	openInfo(p.idx);
 };
+
+window.addEventListener("popstate", () => {
+	if (!modalHistoryEntry) return;
+	modalHistoryEntry = false;
+	if (heroBack.classList.contains("open")) closeHero(false);
+	else if (infoBack.classList.contains("open")) closeInfo();
+	else if (back.classList.contains("open")) closeBooking();
+});
+
 /* #info=N (N = section number) opens that section's കൂടുതൽ വിവരങ്ങൾ modal. This is what the QR code points to. */
 function openInfoFromHash() {
 	const m = /^#info=(\d+)$/.exec(location.hash);
